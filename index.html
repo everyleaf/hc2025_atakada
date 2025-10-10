@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>万葉非公式マスコットキャラクター「いち葉さん」をつくろう</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>万葉非公式マスコットキャラクター「いち葉さん」</h1>
+        </header>
+
+        <!-- トグルボタン -->
+        <div class="toggle-buttons">
+            <button id="showCreatorBtn" class="toggle-btn active">新メンバー</button>
+            <button id="showGalleryBtn" class="toggle-btn">メンバー紹介</button>
+        </div>
+
+        <!-- 作成エリア -->
+        <section class="creator-section">
+            <div class="canvas-wrapper">
+                <img id="baseImage" src="img/leaf1.png" alt="ベース画像">
+                <canvas id="drawingCanvas" width="400" height="400"></canvas>
+            </div>
+
+            <p class="drawing-hint">マウスでらくがきしてみよう！</p>
+
+            <div class="controls">
+                <div class="button-group">
+                    <button id="completeBtn" class="btn btn-primary">採用</button>
+                    <button id="clearBtn" class="btn btn-secondary">↻</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- メンバー紹介エリア -->
+        <section class="gallery-section" style="display: none;">
+            <div id="gallery" class="gallery-grid"></div>
+        </section>
+    </div>
+
+    <section class="animation-section">
+        <canvas id="animationCanvas"></canvas>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
