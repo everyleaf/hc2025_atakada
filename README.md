@@ -1,3 +1,6 @@
+![img_2.png](img/thumbnail1.png)
+![img.png](img/thumbnail2.png)
+![img_1.png](img/thumbnail3.png)![img.png](img.png)
 # 万葉非公式マスコットキャラクター「いち葉さん」をつくろう
 
 万葉の非公式マスコットキャラクター「いち葉さん」を自由にカスタマイズして作成できるWebアプリケーションです。
