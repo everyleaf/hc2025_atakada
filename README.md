@@ -1,9 +1,9 @@
-![thumbnail1.png](img/thumbnail1.png)
-![thumbnail2.png](img/thumbnail2.png)
-![thumbnail3_1.png](img/thumbnail3.png)
+<img width="1335" height="707" alt="image" src="https://github.com/user-attachments/assets/ca93b547-457c-49ec-a918-28f61d821536" />
+
 # 万葉非公式マスコットキャラクター「いち葉さん」をつくろう
 
 万葉の非公式マスコットキャラクター「いち葉さん」を自由にカスタマイズして作成できるWebアプリケーションです。
+<img width="1334" height="149" alt="image" src="https://github.com/user-attachments/assets/b6521191-bc7e-4820-911f-a3878a3ab732" />
 
 ## 🎨 概要
 
