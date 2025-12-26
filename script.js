@@ -5,6 +5,8 @@ const baseImage = document.getElementById('baseImage');
 const clearBtn = document.getElementById('clearBtn');
 const completeBtn = document.getElementById('completeBtn');
 const gallery = document.getElementById('gallery');
+const imageUpload = document.getElementById('imageUpload');
+const uploadBtn = document.getElementById('uploadBtn');
 
 let isDrawing = false;
 let lastX = 0;
@@ -13,9 +15,9 @@ let randomRotation = 0; // ランダムな回転角度を保存
 
 // 定数
 const PEN_COLOR = '#606258';
-const PEN_SIZE = 10;
+const PEN_SIZE = 8;
 const STORAGE_KEY = 'mascotCharacters';
-const LEAF_COUNT = 5; // 葉っぱ画像の枚数
+const LEAF_COUNT = 6; // 葉っぱ画像の枚数
 
 // キャラクター紹介文（100通り）
 const CHARACTER_DESCRIPTIONS = [
@@ -204,8 +206,7 @@ function handleTouchMove(e) {
 // クリアボタン
 clearBtn.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setRandomLeafImage(); // 葉っぱ画像をランダムに変更
-    setRandomRotation(); // 回転角度もランダムに変更
+    setRandomRotation(); // 回転角度をランダムに変更（葉っぱはユーザー選択を維持）
 });
 
 // 完成ボタン
@@ -245,10 +246,7 @@ completeBtn.addEventListener('click', () => {
         // ギャラリーを更新
         loadGallery();
 
-        // 新しい葉っぱ画像を設定
-        setRandomLeafImage();
-
-        // 新しいランダム角度を設定
+        // 新しいランダム角度を設定（葉っぱはユーザー選択を維持）
         setRandomRotation();
     } else {
         alert('画像の読み込み中です。もう一度お試しください。');
@@ -352,6 +350,106 @@ function deleteCharacter(id) {
     animationCharacters = animationCharacters.filter(char => char.id !== id);
 }
 
+// キャラクター画像をダウンロード
+function downloadCharacter(imageData, id) {
+    const link = document.createElement('a');
+    link.download = `ichiha-san-${id}.png`;
+    link.href = imageData;
+    link.click();
+}
+
+// 画像アップロードボタン
+uploadBtn.addEventListener('click', () => {
+    imageUpload.click();
+});
+
+// 画像アップロード処理
+imageUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // 画像ファイルかチェック
+    if (!file.type.startsWith('image/')) {
+        alert('画像ファイルを選択してください。');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+            // 400x400にリサイズ
+            const resizeCanvas = document.createElement('canvas');
+            resizeCanvas.width = 400;
+            resizeCanvas.height = 400;
+            const resizeCtx = resizeCanvas.getContext('2d');
+
+            // 背景を白で塗りつぶし
+            resizeCtx.fillStyle = 'white';
+            resizeCtx.fillRect(0, 0, 400, 400);
+
+            // アスペクト比を維持してリサイズ
+            const scale = Math.min(400 / img.width, 400 / img.height);
+            const width = img.width * scale;
+            const height = img.height * scale;
+            const x = (400 - width) / 2;
+            const y = (400 - height) / 2;
+
+            resizeCtx.drawImage(img, x, y, width, height);
+
+            // data URLに変換
+            const imageData = resizeCanvas.toDataURL('image/png');
+
+            // 作成エリアのcanvasの位置を取得
+            const canvasRect = canvas.getBoundingClientRect();
+            const animationCanvasRect = animationCanvas.getBoundingClientRect();
+
+            // localStorageに保存
+            const newCharacter = saveCharacter(imageData);
+
+            // 落下アニメーションを開始
+            const creatorCenterX = canvasRect.left + canvasRect.width / 2;
+            const animationCanvasLeft = animationCanvasRect.left;
+            const characterX = creatorCenterX - animationCanvasLeft - CHARACTER_SIZE / 2;
+
+            // 落下する画像要素を作成
+            const fallingImg = document.createElement('img');
+            fallingImg.src = imageData;
+            fallingImg.className = 'falling-character';
+            fallingImg.style.width = '400px';
+            fallingImg.style.height = '400px';
+            fallingImg.style.left = canvasRect.left + 'px';
+            fallingImg.style.top = canvasRect.top + 'px';
+
+            // 移動距離を計算
+            const fallX = (animationCanvasRect.left + animationCanvasRect.width / 2) - (canvasRect.left + 200);
+            const fallY = (animationCanvasRect.top + animationCanvasRect.height / 2) - (canvasRect.top + 200);
+
+            fallingImg.style.setProperty('--fall-x', fallX + 'px');
+            fallingImg.style.setProperty('--fall-y', fallY + 'px');
+
+            document.body.appendChild(fallingImg);
+
+            setTimeout(() => {
+                fallingImg.style.animation = 'fallAndShrink 1s ease-in forwards';
+            }, 10);
+
+            setTimeout(() => {
+                fallingImg.remove();
+                addAnimationCharacter(imageData, characterX, newCharacter.id);
+            }, 1000);
+
+            // ギャラリーを更新
+            loadGallery();
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // 同じファイルを再選択できるようにリセット
+    imageUpload.value = '';
+});
+
 // ギャラリー表示
 function loadGallery() {
     const characters = getCharacters();
@@ -386,6 +484,11 @@ function loadGallery() {
             }
         };
 
+        // クリックでダウンロード
+        item.onclick = () => {
+            downloadCharacter(character.data, character.id);
+        };
+
         item.appendChild(img);
         item.appendChild(tooltip);
         item.appendChild(deleteBtn);
@@ -401,9 +504,33 @@ function setRandomRotation() {
 
 // ランダムな葉っぱ画像を設定する関数
 function setRandomLeafImage() {
-    const randomLeafNumber = Math.floor(Math.random() * LEAF_COUNT) + 1; // 1-5のランダムな数値
-    baseImage.src = `img/leaf${randomLeafNumber}.png`;
+    const randomLeafNumber = Math.floor(Math.random() * LEAF_COUNT) + 1;
+    selectLeaf(randomLeafNumber);
 }
+
+// 葉っぱを選択する関数
+function selectLeaf(leafNumber) {
+    // ベース画像を変更
+    baseImage.src = `img/leaf${leafNumber}.png`;
+
+    // 選択状態のクラスを更新
+    const leafOptions = document.querySelectorAll('.leaf-option');
+    leafOptions.forEach(option => {
+        if (parseInt(option.dataset.leaf) === leafNumber) {
+            option.classList.add('selected');
+        } else {
+            option.classList.remove('selected');
+        }
+    });
+}
+
+// 葉っぱ選択パネルのクリックイベント
+document.querySelectorAll('.leaf-option').forEach(option => {
+    option.addEventListener('click', () => {
+        const leafNumber = parseInt(option.dataset.leaf);
+        selectLeaf(leafNumber);
+    });
+});
 
 // ========================================
 // わらわらアニメーション機能
