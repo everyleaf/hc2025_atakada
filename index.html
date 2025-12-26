@@ -30,10 +30,23 @@
 
             <p class="drawing-hint">マウスでらくがきしてみよう！</p>
 
+            <div class="leaf-selector">
+                <img src="img/leaf1.png" alt="葉っぱ1" data-leaf="1" class="leaf-option selected">
+                <img src="img/leaf2.png" alt="葉っぱ2" data-leaf="2" class="leaf-option">
+                <img src="img/leaf3.png" alt="葉っぱ3" data-leaf="3" class="leaf-option">
+                <img src="img/leaf4.png" alt="葉っぱ4" data-leaf="4" class="leaf-option">
+                <img src="img/leaf5.png" alt="葉っぱ5" data-leaf="5" class="leaf-option">
+                <img src="img/leaf6.png" alt="葉っぱ6" data-leaf="6" class="leaf-option">
+            </div>
+
             <div class="controls">
                 <div class="button-group">
                     <button id="completeBtn" class="btn btn-primary">採用</button>
                     <button id="clearBtn" class="btn btn-secondary">↻</button>
+                </div>
+                <div class="upload-group">
+                    <input type="file" id="imageUpload" accept="image/*" hidden>
+                    <button id="uploadBtn" class="btn btn-upload">画像をアップロード</button>
                 </div>
             </div>
         </section>
